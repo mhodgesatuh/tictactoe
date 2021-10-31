@@ -80,7 +80,7 @@ def getNewGameBoard():
 
 def gameIsOver(game_board, player):
     """
-    If a victory is detected return the vi
+    If a victory is detected return True.
     """
     diagonal_1 = True
     diagonal_2 = True
