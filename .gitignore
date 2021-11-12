@@ -1,0 +1,7 @@
+tictactoe/__pycache__
+__pycache__
+.coverage
+.pytest_cache
+tictactoe/docs
+.vscode
+coverage.xml

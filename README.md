@@ -1,2 +1,2 @@
 # TicTacToe
-Class exercise
+A class exercise

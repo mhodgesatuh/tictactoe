@@ -1,22 +1,27 @@
-# TicTacToe - easy implementation to get started
-# Your task is to write a simple program which pretends to play
-# tic-tac-toe with a human player. To make it all easier for you, we've
-# decided to simplify the game. Here are our assumptions:
-# 1) The computer (i.e., your program) should play the game using 'X's;
-#    the human player (e.g., you) should play the game using 'O's; the
-#    first move belongs to the computer - it always puts its first 'X' in
-#    the middle of the board.
-# 2) All the squares are numbered row by row starting with 1 (see the
-#    example session below for reference) the human player inputs their
-#    move by entering the number of the square they choose - the number
-#    must be valid, i.e., it must be an integer, it must be > than 0 and
-#    < than 10, and it cannot point to a field which is already occupied:
-#    the program checks if the game is over.
-# 3) There are four possible verdicts: the game should continue, or the
-#    game ends with a tie, your win, or the computer's win; the computer
-#    responds with its move and the check is repeated.
-# 4) Don't implement any form of artificial intelligence - a random
-#    field choice made by the computer is good enough for the game.
+#!/usr/bin/env python3
+"""
+Project: TicTacToe - class exercise, proceudral version
+
+TicTacToe - an easy procedural implementation to get started
+Your task is to write a simple program which pretends to play
+tic-tac-toe with a human player. To make it all easier for you, we've
+decided to simplify the game. Here are our assumptions:
+1.. The computer (i.e., your program) should play the game using 'X's;
+    the human player (e.g., you) should play the game using 'O's; the
+    first move belongs to the computer - it always puts its first 'X' in
+    the middle of the board.
+2.. All the squares are numbered row by row starting with 1 (see the
+    example session below for reference) the human player inputs their
+    move by entering the number of the square they choose - the number
+    must be valid, i.e., it must be an integer, it must be > than 0 and
+    < than 10, and it cannot point to a field which is already occupied:
+    the program checks if the game is over.
+3.. There are four possible verdicts: the game should continue, or the
+    game ends with a tie, your win, or the computer's win; the computer
+    responds with its move and the check is repeated.
+4.. Don't implement any form of artificial intelligence - a random
+    field choice made by the computer is good enough for the game.
+"""
 from random import randrange
 
 HUMAN_PLAYER = 'O'
@@ -29,20 +34,20 @@ BOARD_LINER = '+-------+-------+-------+'
 BOARD_SPACE = '|       |       |       |'
 BOARD_MOVES = '|   {}   |   {}   |   {}   |'
 
-def calculateNextMove(game_board):
+def calculate_next_move(game_board):
     """
     Calculate the next move.
     """
     print('Computer\'s move:')
-    available_moves = getAvailableMoves(game_board)
-    available_movesCount = len(available_moves)
-    if available_movesCount > 0:
-        # Randomly select an available move.
-        random_move = randrange(available_movesCount)
-        row, col = available_moves[random_move]
+    positions = get_available_positions(game_board)
+    positions_count = len(positions)
+    if positions_count > 0:
+        # Randomly select an available position.
+        random_move = randrange(positions_count)
+        row, col = positions[random_move]
         game_board[row][col] = COMPUTER_PLAYER
 
-def displayGameBoard(game_board):
+def display_positions(game_board):
     """
     Display the current board.
     """
@@ -58,27 +63,25 @@ def displayGameBoard(game_board):
     print(BOARD_LINER)
     return game_board
 
-def getAvailableMoves(game_board):
+def get_available_positions(game_board):
     """
     Get a list of the remaining available moves.
     """
-    available_moves = []
+    positions = []
     for row_idx in range(3):
         for col_idx in range(3):
             if game_board[row_idx][col_idx] not in GAME_PLAYERS:
-                available_moves.append((row_idx, col_idx))
-    return available_moves
+                positions.append((row_idx, col_idx))
+    return positions
 
-def getNewGameBoard():
+def get_new_game_board():
     """
     Prepare new game board.
     """
-    return [[
-            3 * row_idx + col_idx + 1 for col_idx in range(3)
-        ] for row_idx in range(3)
-    ]
+    return [[3 * row_idx + col_idx + 1 for col_idx in range(3)]\
+        for row_idx in range(3)]
 
-def gameIsOver(game_board, player):
+def game_is_over(game_board, player):
     """
     If a victory is detected return True.
     """
@@ -104,14 +107,14 @@ def gameIsOver(game_board, player):
                 diagonal_2 = False
     return True if diagonal_1 or diagonal_1 else False
 
-def requestNextMove(game_board):
+def request_next_move(game_board):
     """
     Handle taking turns between each of the players.
     """
     valid_move = False
     while not valid_move:
         player_move = input("Enter your move: ")
-        if not validUsersMove(player_move):
+        if not valid_players_move(player_move):
             print("Bad move, try again")
             continue
         player_move = int(player_move) - 1
@@ -123,7 +126,7 @@ def requestNextMove(game_board):
         valid_move = True
     game_board[selected_row][selected_col] = HUMAN_PLAYER
 
-def validUsersMove(player_move):
+def valid_players_move(player_move):
     """
     Validate that the player picked a move that is on the board.
     """
@@ -135,33 +138,33 @@ def validUsersMove(player_move):
 # -----------------
 
 # Set up the game board.
-game_board = getNewGameBoard()
+game_board = get_new_game_board()
 
 # The computer gets the first move and always chooses the center.
 game_board[1][1] = COMPUTER_PLAYER
-available_moves = getAvailableMoves(game_board)
+available_positions = get_available_positions(game_board)
 
 # Human and computer turns.  Computer has taken the first move to
 # select the middle of the board.
 victor = None
 human_turn = True
-while len(available_moves):
-    displayGameBoard(game_board)
+while available_positions:
+    game_board.display_game_board(game_board)
     # Get next move.
     if human_turn:
         player = HUMAN_PLAYER
-        requestNextMove(game_board)
+        request_next_move(game_board)
     else:
         player = COMPUTER_PLAYER
-        calculateNextMove(game_board)
+        calculate_next_move(game_board)
     # Assess next move.
-    if gameIsOver(game_board, player):
+    if game_is_over(game_board, player):
         # We found 3 in a row, game over,
         victor = player
-        displayGameBoard(game_board)
+        display_positions(game_board)
         break
     human_turn = not human_turn
-    available_moves = getAvailableMoves(game_board)
+    available_positions = get_available_positions(game_board)
 
 # End game.
 if victor == HUMAN_PLAYER:
