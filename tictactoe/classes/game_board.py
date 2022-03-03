@@ -82,10 +82,11 @@ class GameBoard:
                     self.positions[1][idx] == player.mark and\
                     self.positions[2][idx] == player.mark:
                 return True
-            # Check each diagonal for a win.
+            # Check "\" diagonal to see if all 3 marked.
             if diagonal_1:
                 if self.positions[idx][idx] != player.mark:
                     diagonal_1 = False
+            # Check "/" diagonal to see if all 3 marked.
             if diagonal_2:
                 if self.positions[2 - idx][2 - idx] != player.mark:
                     diagonal_2 = False
@@ -104,7 +105,7 @@ class GameBoard:
 
     def mark_position(self, row_idx, col_idx, player):
         """
-        Place the player's mark into the selected position.
+        Place the player's mark in the selected position.
         """
         self.positions[row_idx][col_idx] = player.mark
 
