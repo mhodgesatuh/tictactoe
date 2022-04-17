@@ -5,7 +5,7 @@ First exercise: a procedural implementation
 
     $ python tictactoe_procedural.py
 
-###Object Oriented Programming
+### Object Oriented Programming
 Second exercise: reconceptualize as interacting objects and implement.
 
     $ python tictactoe_oo.py
