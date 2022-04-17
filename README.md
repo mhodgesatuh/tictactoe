@@ -1,5 +1,5 @@
 # TicTacToe
-## A Python class exercise
+## A Python3 class exercise
 ### Procedural Programming
 First exercise: a procedural implementation
 
