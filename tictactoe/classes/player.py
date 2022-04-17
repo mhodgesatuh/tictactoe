@@ -27,6 +27,5 @@ class Player:
         The player's mark is the string representation of the player
         object.
         """
-        if self.is_computer:
-            return f'{self.mark}-Computer'
-        return f'{self.mark}-Human'
+        return f'{self.mark}-Computer' if self.is_computer\
+            else f'{self.mark}-Human'

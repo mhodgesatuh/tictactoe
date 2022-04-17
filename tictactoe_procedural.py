@@ -24,6 +24,8 @@ decided to simplify the game. Here are our assumptions:
 """
 from random import randrange
 
+from sqlalchemy import null
+
 HUMAN_PLAYER = 'O'
 COMPUTER_PLAYER = 'X'
 GAME_PLAYERS = [HUMAN_PLAYER, COMPUTER_PLAYER]
@@ -142,14 +144,14 @@ game_board = get_new_game_board()
 
 # The computer gets the first move and always chooses the center.
 game_board[1][1] = COMPUTER_PLAYER
-available_positions = get_available_positions(game_board)
+available_positions = display_positions(game_board)
 
 # Human and computer turns.  Computer has taken the first move to
 # select the middle of the board.
 victor = None
 human_turn = True
 while available_positions:
-    game_board.display_game_board(game_board)
+    display_positions(game_board)
     # Get next move.
     if human_turn:
         player = HUMAN_PLAYER
