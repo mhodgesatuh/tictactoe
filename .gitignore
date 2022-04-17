@@ -5,3 +5,4 @@ __pycache__
 tictactoe/docs
 .vscode
 coverage.xml
+pytest
