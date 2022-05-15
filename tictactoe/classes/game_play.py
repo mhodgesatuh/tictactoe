@@ -4,6 +4,8 @@ Project: TicTacToe - class exercise, OOPs version
 """
 from tictactoe.classes.game_board import GameBoard
 from tictactoe.classes.player import Player
+from tictactoe.classes.smart_move_calculator import SmartMoveCalculator\
+    as MoveCalculator
 
 class GamePlay:
     """
@@ -30,6 +32,7 @@ class GamePlay:
         self.players.append(Player(self.PLAYER_MARKS[0], is_computer=True))
         self.players.append(Player(self.PLAYER_MARKS[1]))
         self.game_board = GameBoard(self.PLAYER_MARKS)
+        self.turn_count = 1
 
     @staticmethod
     def end_game(winning_player):
@@ -41,7 +44,7 @@ class GamePlay:
         elif winning_player.is_computer:
             print("Game over, the compute won")
         else:
-            print("Game over, you won!")
+            print("Game over, you beat the computer!")
 
     def get_next_player(self):
         """
@@ -59,25 +62,18 @@ class GamePlay:
 
     def take_turns_return_winner(self):
         """
-        Human and computer take turns.  Computer takes the first move
-        and always selects the middle of the board.
+        Human and computer take turns.  Computer takes the first move.
         """
-        # The computer gets the first move and always chooses the
-        # center.
-        current_player = self.players[self.current_player_idx]
-        self.game_board.mark_position(row_idx=1, col_idx=1, player=current_player)
-
         # Take turns until there is a winner or no open positions
         # remain.
         winning_player = None
-        available_positions = self.game_board.get_available_positions()
-        while available_positions:
+        while self.game_board.has_available_positions:
             self.game_board.display_positions()
             current_player = self.get_next_player()
             # Get next move.
             if current_player.is_computer:
                 print('Computer\'s move:')
-                self.game_board.calculate_next_move(current_player)
+                MoveCalculator(self.game_board, current_player)
             else:
                 # Human to input the next move.
                 self.game_board.request_next_move(current_player)
@@ -87,6 +83,5 @@ class GamePlay:
                 winning_player = current_player
                 self.game_board.display_positions()
                 break
-            # Game continues.
-            available_positions = self.game_board.get_available_positions()
+            self.turn_count += 1
         return winning_player
