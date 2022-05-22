@@ -64,12 +64,10 @@ class GamePlayTest:
         computer_only_game.players[1].is_computer = True
         computer_only_game.take_turns_return_winner()
 
-        available_positions = computer_only_game.game_board.get_available_positions()
-        if available_positions:
+        if computer_only_game.board.has_available_positions():
             # Available positions indicates a player won.
-            game = computer_only_game.game_board
-            first_player_won = game.is_game_over(computer_only_game.players[0])
-            other_player_won = game.is_game_over(computer_only_game.players[1])
+            first_player_won = computer_only_game.players[0]
+            other_player_won = computer_only_game.players[1]
             assert first_player_won or other_player_won is True
         else:
             # No available positions indicates a tied game which

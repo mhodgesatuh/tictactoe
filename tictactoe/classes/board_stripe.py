@@ -15,17 +15,18 @@ class BoardStripe:
     # Class functions
     # ---------------
 
-    def __init__(self, positions):
+    def __init__(self, board_width):
         """
         Initialize the stripe.
         """
-        self.positions = positions
+        self.positions = []
+        self.board_width = board_width
 
     def has_available_position(self):
         """
         Stripe has at least one available position.
         """
-        for idx in range(3):
+        for idx in range(self.board_width):
             if self.positions[idx].is_available():
                 return True
         return False
@@ -37,10 +38,10 @@ class BoardStripe:
         other players mark in it, it's no longer useful.
         """
         marks_found_cnt = 0
-        for idx in range(3):
+        for idx in range(self.board_width):
             if self.positions[idx].is_marked_by(player):
                 marks_found_cnt += 1
-            elif self.positions[idx].is_available():
+            elif not self.positions[idx].is_available():
                 # The other player has marked in this stripe.
                 return False
         return marks_found_cnt == n_marks
@@ -50,7 +51,12 @@ class BoardStripe:
         Return a list of available positions.
         """
         positions_found = []
-        for idx in range(3):
+        for idx in range(self.board_width):
             if self.positions[idx].is_available():
                 positions_found.append(self.positions[idx])
         return positions_found
+
+    def is_position_in_stripe(self, position):
+        """
+        Return True if the position is found in the strip.
+        """

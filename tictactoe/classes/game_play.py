@@ -28,10 +28,11 @@ class GamePlay:
         Initialize the players and start the game.
         """
         self.current_player_idx = 0
+        self.board = GameBoard()
+        self.move_calculator = MoveCalculator(self.board)
         self.players = []
         self.players.append(Player(self.PLAYER_MARKS[0], is_computer=True))
         self.players.append(Player(self.PLAYER_MARKS[1]))
-        self.game_board = GameBoard(self.PLAYER_MARKS)
         self.turn_count = 1
 
     @staticmethod
@@ -44,7 +45,7 @@ class GamePlay:
         elif winning_player.is_computer:
             print("Game over, the compute won")
         else:
-            print("Game over, you beat the computer!")
+            print("Game over, you won!")
 
     def get_next_player(self):
         """
@@ -67,21 +68,25 @@ class GamePlay:
         # Take turns until there is a winner or no open positions
         # remain.
         winning_player = None
-        while self.game_board.has_available_positions:
-            self.game_board.display_positions()
+        while self.board.has_available_positions():
+            self.board.display_positions()
             current_player = self.get_next_player()
             # Get next move.
             if current_player.is_computer:
                 print('Computer\'s move:')
-                MoveCalculator(self.game_board, current_player)
+                selected_position = self.move_calculator.calculate_move_for(
+                    current_player,
+                    self.turn_count)
             else:
                 # Human to input the next move.
-                self.game_board.request_next_move(current_player)
+                selected_position = self.board.request_next_move()
+            # Update the game board.
+            selected_position.set_marked_by(current_player)
             # Assess the move.
-            if self.game_board.is_game_over(current_player):
-                # We found 3 in a row, game over.
+            if self.board.is_game_over(current_player):
+                # We have a winner.
                 winning_player = current_player
-                self.game_board.display_positions()
+                self.board.display_positions()
                 break
             self.turn_count += 1
         return winning_player

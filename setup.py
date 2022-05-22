@@ -13,7 +13,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tictactoe',
-    version='0.2.0',
+    version='0.3.0',
     description='TicTacToe - class exercise',
     packages=find_packages(),
     python_requires=">=3.6, ",

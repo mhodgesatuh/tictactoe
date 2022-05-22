@@ -4,6 +4,7 @@
 Project: TicTacToe - class exercise, OOPs version
 """
 from tictactoe.classes.board_position import BoardPosition as Position
+from tictactoe.classes.board_stripe import BoardStripe as Stripe
 
 class GameBoard:
     """
@@ -49,44 +50,57 @@ class GameBoard:
         stripe_idx = 0
         for i in range(self.BOARD_WIDTH):
             # Initial the row stripes.
-            self.stripes[stripe_idx] = []
+            stripe = Stripe(self.BOARD_WIDTH)
+            self.stripes.append(stripe_idx)
+            self.stripes[stripe_idx] = stripe
             for j in range(self.BOARD_WIDTH):
                 # Calculate the position index.
                 position_idx = i * self.BOARD_WIDTH + j
                 # Create the position.
-                self.positions[position_idx] = Position(position_idx)
+                self.positions.append(position_idx)
+                self.positions[position_idx] = Position(
+                    position_idx,
+                    self.BOARD_WIDTH
+                    )
                 # Save positions to row stripes.
-                self.stripes[stripe_idx].append(self.positions[position_idx])
-                stripe_idx += 1
+                stripe.positions.append(self.positions[position_idx])
+            stripe_idx += 1
 
         # Create the game board's column stripes.
         for i in range(self.BOARD_WIDTH):
-            self.positions[stripe_idx] = []
+            stripe = Stripe(self.BOARD_WIDTH)
+            self.stripes.append(stripe_idx)
+            self.stripes[stripe_idx] = stripe
             for j in range(self.BOARD_WIDTH):
                 # Calculate the position index.
                 position_idx = i + self.BOARD_WIDTH * j
                 # Save positions to column stripes.
-                self.stripes[stripe_idx].append(self.positions[position_idx])
-                stripe_idx += 1
+                stripe.positions.append(self.positions[position_idx])
+            stripe_idx += 1
 
         # Create the game board's diagonal stripes.
+
         #  - Forward diagonal:
         #       position indicies: [0,4,8]; calc using i*4
+        forward_stripe = Stripe(self.BOARD_WIDTH)
+        self.forward_diagonal_stripe_index = stripe_idx
+        self.stripes.append(self.forward_diagonal_stripe_index)
+        self.stripes[self.forward_diagonal_stripe_index] = forward_stripe
         #  - Backward diagonal:
         #       position indicies: [2,4,6]; calc using 2+i*2
-        self.forward_diagonal_stripe_index = stripe_idx
+        backward_stripe = Stripe(self.BOARD_WIDTH)
         self.backward_diagonal_stripe_index = stripe_idx + 1
-        self.stripes[self.forward_diagonal_stripe_index] = []
-        self.stripes[self.backward_diagonal_stripe_index] = []
+        self.stripes.append(self.backward_diagonal_stripe_index)
+        self.stripes[self.backward_diagonal_stripe_index] = backward_stripe
 
         pos_offset = self.BOARD_WIDTH - 1
         for i in range(self.BOARD_WIDTH):
             # Save positions to the forward diagonal stripe.
             position = self.positions[i * pos_offset * 2]
-            self.stripes[self.forward_diagonal_stripe_index].append(position)
+            forward_stripe.positions.append(position)
             # Save positions to the backward diagonal stripe.
             position = self.positions[pos_offset + i * pos_offset]
-            self.stripes[self.backward_diagonal_stripe_index].append(position)
+            backward_stripe.positions.append(position)
 
     def display_positions(self):
         """
@@ -104,10 +118,20 @@ class GameBoard:
             print(self.BOARD_SPACE)
         print(self.BOARD_LINER)
 
+    def get_available_corner_positions(self):
+        """
+        Return a list of the corner positions.
+        """
+        corners_found = []
+        for position in self.positions:
+            if position.is_available_corner():
+                corners_found.append(position)
+        return corners_found
+
     def get_center_position(self):
         """
         Get the middle position.  It is the best position to select for
-        the first turn.
+        the turn.
         """
         center_position_idx = int((len(self.positions) - 1) / 2)
         return self.positions[center_position_idx]
@@ -118,7 +142,7 @@ class GameBoard:
         """
         stripes_found = []
         for stripe in self.stripes:
-            if stripe.has_has_available_position():
+            if stripe.has_available_position():
                 stripes_found.append(stripe)
         return stripes_found
 
@@ -150,11 +174,11 @@ class GameBoard:
         over; return True.
         """
         for stripe in self.stripes:
-            if stripe.has_n_player_marks(player, n_player_marks=3):
+            if stripe.has_n_player_marks(player, n_marks=3):
                 return True
         return False
 
-    def request_next_move(self, player):
+    def request_next_move(self):
         """
         Request the human player's move.
         """
@@ -169,7 +193,7 @@ class GameBoard:
                 print("Already marked, try again")
                 continue
             valid_move = True
-        self.positions[selected_position_idx].set_marked_by(player)
+        return self.positions[selected_position_idx]
 
     @staticmethod
     def valid_players_move(player_move):
