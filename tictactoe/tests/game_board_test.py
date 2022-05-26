@@ -21,14 +21,23 @@ class GameBoardTest:
         Unit test
         """
         # Check for a 5 in the center position.
-        board = GameBoard()
-        assert len(board.positions) == 9
-        assert len(board.stripes) == 8
-        assert board.backward_diagonal_stripe_index == 7
-        assert board.forward_diagonal_stripe_index == 6
-        assert board.positions[4].position_idx == 4
-        assert board.positions[4].position_display == "5"
-        assert board.positions[4].marked_by == ""
+        test_board = GameBoard()
+
+        # Check positions creation.
+        assert len(test_board.positions) == 9
+        assert test_board.positions[4].position_idx == 4
+        assert test_board.positions[4].position_display == "5"
+        assert test_board.positions[4].marked_by == ""
+
+        # Check stripes creation.
+        assert len(test_board.stripes) == 8
+        assert test_board.backward_diagonal_stripe_index == 7
+        assert test_board.forward_diagonal_stripe_index == 6
+        stripes_with_corners_cnt = 0
+        for idx in range(len(test_board.stripes)):
+            if test_board.stripes[idx].has_corner_positions():
+                stripes_with_corners_cnt += 1
+        assert stripes_with_corners_cnt == 6
 
     def display_positions_test(self):
         """

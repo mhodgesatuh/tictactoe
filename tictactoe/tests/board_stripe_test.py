@@ -22,7 +22,7 @@ class BoardStripeTest:
         test_stripe = BoardStripe(self.test_board.BOARD_WIDTH)
         for idx in range(self.test_board.BOARD_WIDTH):
             test_position = BoardPosition(idx, self.test_board.BOARD_WIDTH)
-            test_stripe.positions.append(test_position)
+            test_stripe.add_position(test_position)
         return test_stripe
 
     def init_stripe_test(self):
@@ -33,6 +33,7 @@ class BoardStripeTest:
         assert test_stripe.has_available_position()
         available_test_positions = test_stripe.get_available_positions()
         assert len(available_test_positions) == self.test_board.BOARD_WIDTH
+        assert test_stripe.has_available_position()
 
     def n_marks_test(self):
         """
@@ -65,3 +66,15 @@ class BoardStripeTest:
         test_stripe.positions[1].set_marked_by(self.test_player_x)
         test_stripe.positions[2].set_marked_by(self.test_player_o)
         assert not test_stripe.has_n_player_marks(self.test_player_x, 2)
+
+    def no_available_positions_test(self):
+        """
+        Test for no avalable positions left in the stripe.
+        """
+        # No positions remaining test.
+        test_stripe = self._create_test_stripe()
+        for idx in range(self.test_board.BOARD_WIDTH):
+            test_stripe.positions[idx].set_marked_by(self.test_player_x)
+        available_test_positions = test_stripe.get_available_positions()
+        assert len(available_test_positions) == 0
+        assert not test_stripe.has_available_position()

@@ -20,14 +20,29 @@ class BoardStripe:
         Initialize the stripe.
         """
         self.positions = []
+        self.corner_positions = False
         self.board_width = board_width
+
+    def add_position(self, position):
+        """
+        Add the position to the stripe.
+        """
+        self.positions.append(position)
+        if position.is_corner():
+            self.corner_positions = True
 
     def has_available_position(self):
         """
         Stripe has at least one available position.
         """
+        return self.corner_positions
+
+    def has_corner_positions(self):
+        """
+        Return true if the stripe has corner positions.
+        """
         for idx in range(self.board_width):
-            if self.positions[idx].is_available():
+            if self.positions[idx].is_corner():
                 return True
         return False
 
@@ -46,12 +61,14 @@ class BoardStripe:
                 return False
         return marks_found_cnt == n_marks
 
-    def get_available_positions(self):
+    def get_available_positions(self, corners_only=True):
         """
         Return a list of available positions.
         """
         positions_found = []
         for idx in range(self.board_width):
+            if corners_only and not self.positions[idx].is_corner():
+                continue
             if self.positions[idx].is_available():
                 positions_found.append(self.positions[idx])
         return positions_found

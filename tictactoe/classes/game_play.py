@@ -35,6 +35,12 @@ class GamePlay:
         self.players.append(Player(self.PLAYER_MARKS[1]))
         self.turn_count = 1
 
+    def get_current_player(self):
+        """
+        Get the current player.
+        """
+        return self.players[self.current_player_idx]
+
     @staticmethod
     def end_game(winning_player):
         """
@@ -76,6 +82,7 @@ class GamePlay:
                 print('Computer\'s move:')
                 selected_position = self.move_calculator.calculate_move_for(
                     current_player,
+                    self.get_next_player(),
                     self.turn_count)
             else:
                 # Human to input the next move.

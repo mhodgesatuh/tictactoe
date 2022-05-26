@@ -20,7 +20,7 @@ class BoardPosition:
         """
         self.position_idx = position_idx
         self.marked_by = ""
-        self.is_corner_position = False
+        self.corner_position = False
 
         position_no = position_idx + 1
 
@@ -33,7 +33,7 @@ class BoardPosition:
             right_corner_no = width**i
             # Check for a left or right corner match.
             if position_no in [right_corner_no - width + 1, right_corner_no]:
-                self.is_corner_position = True
+                self.corner_position = True
                 break
 
     def is_available(self):
@@ -52,7 +52,7 @@ class BoardPosition:
         """
         Return true if the position is a one of the corners.
         """
-        return self.is_corner_position
+        return self.corner_position
 
     def is_marked(self):
         """

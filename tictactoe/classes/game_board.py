@@ -63,7 +63,7 @@ class GameBoard:
                     self.BOARD_WIDTH
                     )
                 # Save positions to row stripes.
-                stripe.positions.append(self.positions[position_idx])
+                stripe.add_position(self.positions[position_idx])
             stripe_idx += 1
 
         # Create the game board's column stripes.
@@ -75,32 +75,39 @@ class GameBoard:
                 # Calculate the position index.
                 position_idx = i + self.BOARD_WIDTH * j
                 # Save positions to column stripes.
-                stripe.positions.append(self.positions[position_idx])
+                stripe.add_position(self.positions[position_idx])
             stripe_idx += 1
 
         # Create the game board's diagonal stripes.
-
-        #  - Forward diagonal:
-        #       position indicies: [0,4,8]; calc using i*4
-        forward_stripe = Stripe(self.BOARD_WIDTH)
-        self.forward_diagonal_stripe_index = stripe_idx
-        self.stripes.append(self.forward_diagonal_stripe_index)
-        self.stripes[self.forward_diagonal_stripe_index] = forward_stripe
+        #
         #  - Backward diagonal:
         #       position indicies: [2,4,6]; calc using 2+i*2
         backward_stripe = Stripe(self.BOARD_WIDTH)
-        self.backward_diagonal_stripe_index = stripe_idx + 1
-        self.stripes.append(self.backward_diagonal_stripe_index)
-        self.stripes[self.backward_diagonal_stripe_index] = backward_stripe
+        self.stripes.append(backward_stripe)
+        self.stripes[stripe_idx] = backward_stripe
+        stripe_idx += 1
+        #
+        #  - Forward diagonal:
+        #       position indicies: [0,4,8]; calc using i*4
+        forward_stripe = Stripe(self.BOARD_WIDTH)
+        self.stripes.append(stripe_idx)
+        self.stripes[stripe_idx] = forward_stripe
 
         pos_offset = self.BOARD_WIDTH - 1
         for i in range(self.BOARD_WIDTH):
             # Save positions to the forward diagonal stripe.
             position = self.positions[i * pos_offset * 2]
-            forward_stripe.positions.append(position)
+            forward_stripe.add_position(position)
             # Save positions to the backward diagonal stripe.
             position = self.positions[pos_offset + i * pos_offset]
-            backward_stripe.positions.append(position)
+            backward_stripe.add_position(position)
+
+        # Optimize the stripes for the smart move calculater by listing
+        # the diagonal stripes first. Generally, moves on the stripes
+        # are the stronger moves at the beginning of the game.
+        self.stripes.reverse()
+        self.forward_diagonal_stripe_index = 0
+        self.backward_diagonal_stripe_index = 1
 
     def display_positions(self):
         """
@@ -146,7 +153,7 @@ class GameBoard:
                 stripes_found.append(stripe)
         return stripes_found
 
-    def get_stripes_with_n_player_marks(self, player, n_marks):
+    def get_stripes_with_n_player_marks(self, player, n_marks, corners_only=True):
         """
         Get a list of stripes with the required number of player marks.
         Skip stripes that have any marks by the other player since they
@@ -154,6 +161,9 @@ class GameBoard:
         """
         stripes_found = []
         for stripe in self.stripes:
+            if corners_only and not stripe.has_corner_positions():
+                # Ignore stripes without corner positions, if requested.
+                continue
             if stripe.has_n_player_marks(player, n_marks):
                 stripes_found.append(stripe)
         return stripes_found

@@ -31,7 +31,7 @@ class SmartMoveCalculator:
         # Dependency injection.
         self.board = board
 
-    def calculate_move_for(self, player, turn_count):
+    def calculate_move_for(self, player, other_player, turn_count):
         """
         Calculate and perform the next move.
         """
@@ -44,17 +44,29 @@ class SmartMoveCalculator:
                 return position
 
             # Randomly choose one of the two diagonals.
-            stripe_idx = self.board.forward_diagonal_stripe_index + randrange(1)
-            # Randomly choose one of the two ends of the diagonal.
-            pos_idx = randrange(0, 2, 3)
+            stripe_idx = self.board.forward_diagonal_stripe_index + randrange(2)
+            # Randomly choose one of the two ends, 0 or 2, of the diagonal.
+            pos_idx = randrange(0, 3, 2)
             return self.board.stripes[stripe_idx].positions[pos_idx]
 
         # Check for stripes with 2 marks in order to win or block a win.
         # Then check for stripes with 1 mark.
         for n_marks in range(2, 0, -1):
-            stripes = self.board.get_stripes_with_n_player_marks(player, n_marks)
+            # Look for a win.
+            stripes = self.board.get_stripes_with_n_player_marks(
+                player,
+                n_marks)
             if len(stripes) > 0:
+                # Return a winning position, or at least a good position.
                 return self.get_random_available_position(stripes)
+            # Look for blocking a win.
+            if n_marks == 2:
+                stripes = self.board.get_stripes_with_n_player_marks(
+                    other_player,
+                    n_marks)
+                if len(stripes) > 0:
+                    # Return a blocking position.
+                    return self.get_random_available_position(stripes)
 
         # Any open corner position will do at this point.
         corner_positions = self.board.get_available_corner_positions()
@@ -66,7 +78,8 @@ class SmartMoveCalculator:
         stripes = self.board.get_stripes_with_available_positions()
         return self.get_random_available_position(stripes)
 
-    def get_random_available_position(self, stripes):
+    @staticmethod
+    def get_random_available_position(stripes):
         """
         Once a filtered set of stripes matching the requirements is
         found, randomly choose a position from one of them to help avoid
@@ -74,9 +87,15 @@ class SmartMoveCalculator:
         """
         # Randomly choose one of the matching stripes.
         stripe_idx = randrange(len(stripes))
-        stripe = self.board.stripes[stripe_idx]
+        stripe = stripes[stripe_idx]
 
-        # Randomly choose one of the available positions.
-        available_positions = stripe.get_available_positions()
+        # Randomly choose a corner position, if available.
+        available_corner_positions = stripe.get_available_positions()
+        if len(available_corner_positions) > 0:
+            pos_idx = randrange(len(available_corner_positions))
+            return available_corner_positions[pos_idx]
+
+        # Randomly choose a any position, if available.
+        available_positions = stripe.get_available_positions(corners_only=False)
         pos_idx = randrange(len(available_positions))
-        return stripe.positions[pos_idx]
+        return available_positions[pos_idx]
