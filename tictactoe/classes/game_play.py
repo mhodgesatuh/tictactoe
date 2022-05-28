@@ -99,9 +99,9 @@ class GamePlay:
             if self.board.is_game_over(self.get_current_player()):
                 # We have a winner.
                 winning_player = self.get_current_player()
-                self.board.display_positions()
                 break
             # The game continues.
             self.turn_count += 1
 
+        self.board.display_positions()
         return winning_player
