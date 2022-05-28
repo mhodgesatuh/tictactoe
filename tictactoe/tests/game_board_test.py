@@ -1,8 +1,8 @@
 #!/usr/bin/env python
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """
-from unittest.mock import patch
 from IPython.utils.capture import capture_output
 from tictactoe.classes.game_board import GameBoard
 from tictactoe.classes.player import Player
@@ -13,7 +13,6 @@ class GameBoardTest:
     """
     game_board = GameBoard()
     test_player = Player('X')
-    other_test_player = Player('O')
 
     @staticmethod
     def init_test():
@@ -31,8 +30,6 @@ class GameBoardTest:
 
         # Check stripes creation.
         assert len(test_board.stripes) == 8
-        assert test_board.backward_diagonal_stripe_index == 7
-        assert test_board.forward_diagonal_stripe_index == 6
         stripes_with_corners_cnt = 0
         for idx in range(len(test_board.stripes)):
             if test_board.stripes[idx].has_corner_positions():
@@ -67,6 +64,41 @@ class GameBoardTest:
             position_idx = i * game_board.BOARD_WIDTH
             game_board.positions[position_idx].set_marked_by(self.test_player)
         assert game_board.is_game_over(self.test_player)
+
+    @staticmethod
+    def get_available_corner_positions_test():
+        """
+        Test senario:
+                [1, x, x]
+                [x, 5, 6]
+                [x, 8, 9]
+        """
+        test_board = GameBoard()
+        test_player = Player('X')
+        test_board.positions[1].set_marked_by(test_player)
+        test_board.positions[2].set_marked_by(test_player)
+        test_board.positions[3].set_marked_by(test_player)
+        test_board.positions[6].set_marked_by(test_player)
+        corner_positions = test_board.get_available_corner_positions()
+        assert len(corner_positions) == 2
+
+    @staticmethod
+    def get_stripes_with_available_positions_test():
+        """
+        Test senario:
+                [x, x, x]
+                [x, 5, 6]
+                [x, 8, 9]
+        """
+        test_board = GameBoard()
+        test_player = Player('X')
+        test_board.positions[0].set_marked_by(test_player)
+        test_board.positions[1].set_marked_by(test_player)
+        test_board.positions[2].set_marked_by(test_player)
+        test_board.positions[3].set_marked_by(test_player)
+        test_board.positions[6].set_marked_by(test_player)
+        stripes = test_board.get_stripes_with_available_positions()
+        assert len(stripes) == 6
 
     @staticmethod
     def valid_players_move_test():

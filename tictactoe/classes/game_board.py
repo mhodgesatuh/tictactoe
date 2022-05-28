@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#pylint: disable=too-few-public-methods
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """
@@ -135,6 +135,16 @@ class GameBoard:
                 corners_found.append(position)
         return corners_found
 
+    def get_available_positions(self):
+        """
+        Return True if there are available positions.
+        """
+        available_positions = []
+        for position in self.positions:
+            if position.is_available():
+                available_positions.append(position)
+        return available_positions
+
     def get_center_position(self):
         """
         Get the middle position.  It is the best position to select for
@@ -153,16 +163,17 @@ class GameBoard:
                 stripes_found.append(stripe)
         return stripes_found
 
-    def get_stripes_with_n_player_marks(self, player, n_marks, corners_only=True):
+    def get_stripes_with_n_player_marks(self, player, n_marks, turn_count):
         """
         Get a list of stripes with the required number of player marks.
         Skip stripes that have any marks by the other player since they
         are not winnable.
         """
         stripes_found = []
+        corners_only = True if n_marks == 1 and turn_count <= 6 else False
         for stripe in self.stripes:
             if corners_only and not stripe.has_corner_positions():
-                # Ignore stripes without corner positions, if requested.
+                # Ignore stripes without corner positions.
                 continue
             if stripe.has_n_player_marks(player, n_marks):
                 stripes_found.append(stripe)

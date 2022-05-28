@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #pylint: disable=too-few-public-methods
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """

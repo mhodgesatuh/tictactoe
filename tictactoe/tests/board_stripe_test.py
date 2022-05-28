@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#pylint: disable=too-few-public-methods
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """
@@ -35,16 +35,16 @@ class BoardStripe:
         """
         Stripe has at least one available position.
         """
-        return self.corner_positions
+        for idx in range(self.board_width):
+            if self.positions[idx].is_available():
+                return True
+        return False
 
     def has_corner_positions(self):
         """
         Return true if the stripe has corner positions.
         """
-        for idx in range(self.board_width):
-            if self.positions[idx].is_corner():
-                return True
-        return False
+        return self.corner_positions
 
     def has_n_player_marks(self, player, n_marks):
         """
@@ -61,7 +61,13 @@ class BoardStripe:
                 return False
         return marks_found_cnt == n_marks
 
-    def get_available_positions(self, corners_only=True):
+    def get_available_corner_positions(self):
+        """
+        Return a list of available corner positions.
+        """
+        return self.get_available_positions(True)
+
+    def get_available_positions(self, corners_only=False):
         """
         Return a list of available positions.
         """
