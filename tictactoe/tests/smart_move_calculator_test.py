@@ -36,7 +36,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 1: check that the center position is returned.
+        # Check that the center position is returned.
         test_turn_count = 1
         center_position = test_game.board.get_center_position()
         selected_position = test_game.move_calculator.calculate_move_for(
@@ -61,7 +61,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 2: check that all of the valid corner positions are
+        # Check that all of the valid corner positions are
         # randomly returned.
         test_turn_count = 2
         valid_position_idxs = [0, 2, 6, 8]
@@ -95,7 +95,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 3: check that all of the valid corner positions are
+        # Check that all of the valid corner positions are
         # randomly returned.
         test_turn_count = 3
         valid_position_idxs = [2, 6]
@@ -128,7 +128,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 4: check that the [3,5,7] combo is blocked.
+        # Check that the [3,5,7] combo is blocked.
         test_turn_count = 4
         blocking_position = test_game.board.positions[6]
         selected_position = test_game.move_calculator.calculate_move_for(
@@ -150,7 +150,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 5: check that the [3,5,7] combo is blocked.
+        # Check that the [3,5,7] combo is blocked.
         test_turn_count = 5
         blocking_position = test_game.board.positions[3]
         selected_position = test_game.move_calculator.calculate_move_for(
@@ -172,7 +172,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 6: check that the [4,5,6] combo is blocked.
+        # Check that the [4,5,6] combo is blocked.
         test_turn_count = 6
         blocking_position = test_game.board.positions[5]
         selected_position = test_game.move_calculator.calculate_move_for(
@@ -194,7 +194,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 7: check that a position on [2,5,8] is selected.
+        # Check that a position on [2,5,8] is selected.
         test_turn_count = 7
         valid_position_idxs = [1, 7]
         valid_positions_idxs_found = []
@@ -226,7 +226,7 @@ class SmartMoveCalculatorTest:
         test_player_o = test_game.players[0]
         test_player_x = test_game.players[1]
 
-        # Test move 7: check that a position on [2,5,8] is selected.
+        # Check that a position on [2,5,8] is selected.
         test_turn_count = 8
         blocking_position = test_game.board.positions[1]
         selected_position = test_game.move_calculator.calculate_move_for(
@@ -238,7 +238,7 @@ class SmartMoveCalculatorTest:
 
     def move_9_test(self):
         """
-        Move 8, player X just picks the remaining hopeless position.
+        Move 9, player O just picks the remaining hopeless position.
         Setup:
             O O X
             X X O
@@ -248,7 +248,7 @@ class SmartMoveCalculatorTest:
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Test move 7: check that the remaining position is selected.
+        # Check that the remaining position is selected.
         test_turn_count = 9
         blocking_position = test_game.board.positions[8]
         selected_position = test_game.move_calculator.calculate_move_for(
