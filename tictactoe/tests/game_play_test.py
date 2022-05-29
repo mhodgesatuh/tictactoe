@@ -70,6 +70,7 @@ class GamePlayTest:
         # human input in order to test.
         computer_only_game = GamePlay()
         computer_only_game.players[1].computer_player = True
+
         # Computer players should play to a draw every time.
         assert computer_only_game.take_turns_return_winner() is None
         assert not computer_only_game.board.has_available_positions()

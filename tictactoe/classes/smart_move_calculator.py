@@ -52,6 +52,7 @@ class SmartMoveCalculator:
         # Check for stripes with 2 same_player marks in order to win or
         # block a win.  Then check for stripes with 1 mark.
         for n_marks in range(2, 0, -1):
+
             # Look for a win.
             stripes = self.board.get_stripes_with_n_player_marks(
                 player,
@@ -60,6 +61,7 @@ class SmartMoveCalculator:
             if len(stripes) > 0:
                 # Return a winning position, or at least a good position.
                 return self.get_random_available_position(stripes)
+
             # Look for blocking a win.
             if n_marks == 2:
                 stripes = self.board.get_stripes_with_n_player_marks(

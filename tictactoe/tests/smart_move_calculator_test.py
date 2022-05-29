@@ -10,47 +10,66 @@ class SmartMoveCalculatorTest:
     SmartMoveCalculater test harness.
     """
 
+    TEST_ITERATIONS = 20
+
+    @staticmethod
+    def _setup_game_up_to_move(move_cnt):
+        """
+        Mark the positions up to the move count in order to set the test
+        scenario.
+        """
+        test_game = GamePlay()
+        move_sequence = [4, 0, 2, 6, 3, 5, 7, 1]
+        for idx in range(move_cnt):
+            position_idx = move_sequence[idx]
+            player = test_game.get_current_player()
+            test_game.board.positions[position_idx].set_marked_by(player)
+            test_game.turn_count += 1
+        return test_game
+
     @staticmethod
     def move_1_test():
         """
         Move 1, player X should return the center.
         """
         test_game = GamePlay()
-
-        # Set of the board for the test.
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-        center_position = test_game.board.get_center_position()
 
         # Test move 1: check that the center position is returned.
         test_turn_count = 1
+        center_position = test_game.board.get_center_position()
         selected_position = test_game.move_calculator.calculate_move_for(
             test_player_x,
             test_player_o,
             test_turn_count)
+
         assert selected_position.position_idx == center_position.position_idx
 
-    @staticmethod
-    def move_2_test():
+    def move_2_test(self):
         """
         Move 2, player O should return a corner.
+        Setup:
+            1 2 3
+            4 X 6
+            7 8 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(1)
 
         # Set of the board for the test.
         # Move 1: player X marks the center position.
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
 
-        # Set up move 1.
-        test_game.board.positions[4].set_marked_by(test_player_x)
-
         # Test move 2: check that all of the valid corner positions are
         # randomly returned.
         test_turn_count = 2
         valid_position_idxs = [0, 2, 6, 8]
         valid_positions_idxs_found = []
-        for _ in range(20):
+
+        # Rerun the test multiple times in order to see all of the
+        # possible random selections.
+        for _ in range(self.TEST_ITERATIONS):
             selected_position = test_game.move_calculator.calculate_move_for(
                 test_player_o,
                 test_player_x,
@@ -60,28 +79,31 @@ class SmartMoveCalculatorTest:
                 valid_positions_idxs_found.append(selected_position.position_idx)
             if len(valid_positions_idxs_found) == len(valid_position_idxs):
                 break
+
         assert len(valid_positions_idxs_found) == len(valid_position_idxs)
 
-    @staticmethod
-    def move_3_test():
+    def move_3_test(self):
         """
         Move 3, player X should return a corner on a stripe not marked
         by player "O".
+        Setup:
+            O 2 3
+            4 X 6
+            7 8 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(2)
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-
-        # Set up moves 1 & 2.
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
 
         # Test move 3: check that all of the valid corner positions are
         # randomly returned.
         test_turn_count = 3
         valid_position_idxs = [2, 6]
         valid_positions_idxs_found = []
-        for _ in range(20):
+
+        # Rerun the test multiple times in order to see all of the
+        # possible random selections.
+        for _ in range(self.TEST_ITERATIONS):
             selected_position = test_game.move_calculator.calculate_move_for(
                 test_player_x,
                 test_player_o,
@@ -91,24 +113,20 @@ class SmartMoveCalculatorTest:
                 valid_positions_idxs_found.append(selected_position.position_idx)
             if len(valid_positions_idxs_found) == len(valid_position_idxs):
                 break
+
         assert len(valid_positions_idxs_found) == len(valid_position_idxs)
 
-    @staticmethod
-    def move_4_test():
+    def move_4_test(self):
         """
         Move 4, player O should return a corner blocking move.
+        Setup:
+            O 2 X
+            4 X 6
+            7 8 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(3)
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-
-        # Set up moves 1-3.
-        #   O 2 X
-        #   4 X 6
-        #   7 8 9
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
-        test_game.board.positions[2].set_marked_by(test_player_x)
 
         # Test move 4: check that the [3,5,7] combo is blocked.
         test_turn_count = 4
@@ -117,25 +135,20 @@ class SmartMoveCalculatorTest:
             test_player_o,
             test_player_x,
             test_turn_count)
+
         assert selected_position.position_idx == blocking_position.position_idx
 
-    @staticmethod
-    def move_5_test():
+    def move_5_test(self):
         """
         Move 5, player X should return a blocking move.
+        Setup:
+            O 2 X
+            4 X 6
+            O 8 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(4)
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-
-        # Set up moves 1-4.
-        #   O 2 X
-        #   4 X 6
-        #   O 8 9
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
-        test_game.board.positions[2].set_marked_by(test_player_x)
-        test_game.board.positions[6].set_marked_by(test_player_o)
 
         # Test move 5: check that the [3,5,7] combo is blocked.
         test_turn_count = 5
@@ -144,26 +157,20 @@ class SmartMoveCalculatorTest:
             test_player_x,
             test_player_o,
             test_turn_count)
+
         assert selected_position.position_idx == blocking_position.position_idx
 
-    @staticmethod
-    def move_6_test():
+    def move_6_test(self):
         """
         Move 6, player O should return a blocking move.
+        Setup:
+            O 2 X
+            X X 6
+            O 8 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(5)
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-
-        # Set up moves 1-5.
-        #   O 2 X
-        #   X X 6
-        #   O 8 9
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
-        test_game.board.positions[2].set_marked_by(test_player_x)
-        test_game.board.positions[6].set_marked_by(test_player_o)
-        test_game.board.positions[3].set_marked_by(test_player_x)
 
         # Test move 6: check that the [4,5,6] combo is blocked.
         test_turn_count = 6
@@ -172,33 +179,29 @@ class SmartMoveCalculatorTest:
             test_player_o,
             test_player_x,
             test_turn_count)
+
         assert selected_position.position_idx == blocking_position.position_idx
 
-    @staticmethod
-    def move_7_test():
+    def move_7_test(self):
         """
         Move 7, player X should return a blocking move.
+        Setup:
+            O 2 X
+            X X O
+            O 8 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(6)
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-
-        # Set up moves 1-6.
-        #   O 2 X
-        #   X X O
-        #   O 8 9
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
-        test_game.board.positions[2].set_marked_by(test_player_x)
-        test_game.board.positions[6].set_marked_by(test_player_o)
-        test_game.board.positions[3].set_marked_by(test_player_x)
-        test_game.board.positions[5].set_marked_by(test_player_o)
 
         # Test move 7: check that a position on [2,5,8] is selected.
         test_turn_count = 7
         valid_position_idxs = [1, 7]
         valid_positions_idxs_found = []
-        for _ in range(20):
+
+        # Rerun the test multiple times in order to see all of the
+        # possible random selections.
+        for _ in range(self.TEST_ITERATIONS):
             selected_position = test_game.move_calculator.calculate_move_for(
                 test_player_x,
                 test_player_o,
@@ -208,28 +211,20 @@ class SmartMoveCalculatorTest:
                 valid_positions_idxs_found.append(selected_position.position_idx)
             if len(valid_positions_idxs_found) == len(valid_position_idxs):
                 break
+
         assert len(valid_positions_idxs_found) == len(valid_position_idxs)
 
-    @staticmethod
-    def move_8_test():
+    def move_8_test(self):
         """
         Move 8, player O should return a blocking move.
+        Setup:
+            O 2 X
+            X X O
+            O X 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(7)
         test_player_o = test_game.players[0]
         test_player_x = test_game.players[1]
-
-        # Set up moves 1-7.
-        #   O 2 X
-        #   X X O
-        #   O X 9
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
-        test_game.board.positions[2].set_marked_by(test_player_x)
-        test_game.board.positions[6].set_marked_by(test_player_o)
-        test_game.board.positions[3].set_marked_by(test_player_x)
-        test_game.board.positions[5].set_marked_by(test_player_o)
-        test_game.board.positions[7].set_marked_by(test_player_x)
 
         # Test move 7: check that a position on [2,5,8] is selected.
         test_turn_count = 8
@@ -238,29 +233,20 @@ class SmartMoveCalculatorTest:
             test_player_o,
             test_player_x,
             test_turn_count)
+
         assert selected_position.position_idx == blocking_position.position_idx
 
-    @staticmethod
-    def move_9_test():
+    def move_9_test(self):
         """
         Move 8, player X just picks the remaining hopeless position.
+        Setup:
+            O O X
+            X X O
+            O X 9
         """
-        test_game = GamePlay()
+        test_game = self._setup_game_up_to_move(8)
         test_player_x = test_game.players[0]
         test_player_o = test_game.players[1]
-
-        # Set up moves 1-8.
-        #   O O X
-        #   X X O
-        #   O X 9
-        test_game.board.positions[4].set_marked_by(test_player_x)
-        test_game.board.positions[0].set_marked_by(test_player_o)
-        test_game.board.positions[2].set_marked_by(test_player_x)
-        test_game.board.positions[6].set_marked_by(test_player_o)
-        test_game.board.positions[3].set_marked_by(test_player_x)
-        test_game.board.positions[5].set_marked_by(test_player_o)
-        test_game.board.positions[7].set_marked_by(test_player_x)
-        test_game.board.positions[1].set_marked_by(test_player_o)
 
         # Test move 7: check that the remaining position is selected.
         test_turn_count = 9
@@ -269,4 +255,5 @@ class SmartMoveCalculatorTest:
             test_player_o,
             test_player_x,
             test_turn_count)
+
         assert selected_position.position_idx == blocking_position.position_idx
