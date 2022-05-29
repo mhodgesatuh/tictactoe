@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """
@@ -15,7 +16,6 @@ class GamePlayTest:
         """
         Unit test
         """
-        assert self.test_game.current_player_idx == 0
         assert self.test_game.players[0].mark == self.test_game.PLAYER_MARKS[0]
         assert self.test_game.players[1].mark == self.test_game.PLAYER_MARKS[1]
 
@@ -43,15 +43,23 @@ class GamePlayTest:
         captured()
         assert "Game over, you won!" in captured.stdout
 
+    def get_current_player_test(self):
+        """
+        Unit test.
+        """
+        self.test_game.turn_count = 1
+        current_player = self.test_game.get_current_player()
+        assert current_player.mark == self.test_game.PLAYER_MARKS[0]
+
     def get_next_player_test(self):
         """
         Unit test
         """
-        assert self.test_game.current_player_idx == 0
+        self.test_game.turn_count = 1
+        current_player = self.test_game.get_current_player()
         next_player = self.test_game.get_next_player()
-        assert next_player.mark == 'O'
-        first_player = self.test_game.get_next_player()
-        assert first_player.mark == 'X'
+        assert next_player.mark == self.test_game.PLAYER_MARKS[1]
+        assert not current_player.mark == next_player.mark
 
     @staticmethod
     def take_turns_return_winner_test():
@@ -61,17 +69,8 @@ class GamePlayTest:
         # Test by making both players the computer since we need to fake
         # human input in order to test.
         computer_only_game = GamePlay()
-        computer_only_game.players[1].is_computer = True
-        computer_only_game.take_turns_return_winner()
+        computer_only_game.players[1].computer_player = True
 
-        available_positions = computer_only_game.game_board.get_available_positions()
-        if available_positions:
-            # Available positions indicates a player won.
-            game = computer_only_game.game_board
-            first_player_won = game.is_game_over(computer_only_game.players[0])
-            other_player_won = game.is_game_over(computer_only_game.players[1])
-            assert first_player_won or other_player_won is True
-        else:
-            # No available positions indicates a tied game which
-            # indicates game ran successfully.
-            assert True
+        # Computer players should play to a draw every time.
+        assert computer_only_game.take_turns_return_winner() is None
+        assert not computer_only_game.board.has_available_positions()

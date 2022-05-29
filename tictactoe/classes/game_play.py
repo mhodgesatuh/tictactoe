@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """
 from tictactoe.classes.game_board import GameBoard
 from tictactoe.classes.player import Player
+from tictactoe.classes.smart_move_calculator import SmartMoveCalculator\
+    as MoveCalculator
 
 class GamePlay:
     """
@@ -25,11 +28,13 @@ class GamePlay:
         """
         Initialize the players and start the game.
         """
-        self.current_player_idx = 0
+        self.board = GameBoard()
+        self.move_calculator = MoveCalculator(self.board)
         self.players = []
-        self.players.append(Player(self.PLAYER_MARKS[0], is_computer=True))
+        self.players.append(Player(self.PLAYER_MARKS[0], computer_player=True))
         self.players.append(Player(self.PLAYER_MARKS[1]))
-        self.game_board = GameBoard(self.PLAYER_MARKS)
+        self.players_cnt = len(self.players)
+        self.turn_count = 1
 
     @staticmethod
     def end_game(winning_player):
@@ -38,17 +43,28 @@ class GamePlay:
         """
         if winning_player is None:
             print("Game over, tie!")
-        elif winning_player.is_computer:
+        elif winning_player.is_computer():
             print("Game over, the compute won")
         else:
             print("Game over, you won!")
+
+    def get_current_player(self):
+        """
+        Get the current player by turn count.
+        """
+        return self.players[(self.turn_count - 1) % self.players_cnt]
 
     def get_next_player(self):
         """
         Determine the index of the player taking the next turn.
         """
-        self.current_player_idx = 1 if self.current_player_idx == 0 else 0
-        return self.players[self.current_player_idx]
+        return self.players[self.turn_count % self.players_cnt]
+
+    def is_current_player_computer(self):
+        """
+        Return true if the current player is a computer.
+        """
+        return self.get_current_player().is_computer()
 
     def play_game_return_winner(self):
         """
@@ -59,34 +75,33 @@ class GamePlay:
 
     def take_turns_return_winner(self):
         """
-        Human and computer take turns.  Computer takes the first move
-        and always selects the middle of the board.
+        Human and computer take turns.  Computer takes the first move.
+        The current player is determined using modulo on the turn count.
         """
-        # The computer gets the first move and always chooses the
-        # center.
-        current_player = self.players[self.current_player_idx]
-        self.game_board.mark_position(row_idx=1, col_idx=1, player=current_player)
-
         # Take turns until there is a winner or no open positions
         # remain.
         winning_player = None
-        available_positions = self.game_board.get_available_positions()
-        while available_positions:
-            self.game_board.display_positions()
-            current_player = self.get_next_player()
+        while self.board.has_available_positions():
+            self.board.display_positions()
             # Get next move.
-            if current_player.is_computer:
+            if self.is_current_player_computer():
                 print('Computer\'s move:')
-                self.game_board.calculate_next_move(current_player)
+                selected_position = self.move_calculator.calculate_move_for(
+                    self.get_current_player(),
+                    self.get_next_player(),
+                    self.turn_count)
             else:
                 # Human to input the next move.
-                self.game_board.request_next_move(current_player)
+                selected_position = self.board.request_next_move()
+            # Update the game board.
+            selected_position.set_marked_by(self.get_current_player())
             # Assess the move.
-            if self.game_board.is_game_over(current_player):
-                # We found 3 in a row, game over.
-                winning_player = current_player
-                self.game_board.display_positions()
+            if self.board.is_game_over(self.get_current_player()):
+                # We have a winner.
+                winning_player = self.get_current_player()
                 break
-            # Game continues.
-            available_positions = self.game_board.get_available_positions()
+            # The game continues.
+            self.turn_count += 1
+
+        self.board.display_positions()
         return winning_player

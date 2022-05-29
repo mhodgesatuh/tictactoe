@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-#pylint: disable=too-few-public-methods
+#pylint: disable=import-error
 """
 Project: TicTacToe - class exercise, OOPs version
 """
-from random import randrange
+from tictactoe.classes.board_position import BoardPosition as Position
+from tictactoe.classes.board_stripe import BoardStripe as Stripe
 
 class GameBoard:
     """
@@ -18,7 +19,7 @@ class GameBoard:
     #  ruler:       123*567 123*567 123*567
     BOARD_LINER = '+-------+-------+-------+'
     BOARD_SPACE = '|       |       |       |'
-    BOARD_MOVES = '|   {}   |   {}   |   {}   |'
+    BOARD_MARKS = '|   {}   |   {}   |   {}   |'
 
     BOARD_WIDTH = 3
 
@@ -26,90 +27,179 @@ class GameBoard:
     # Class functions
     # ---------------
 
-    def __init__(self, player_marks):
+    def __init__(self):
         """
         Initialize the game board; all positions are initially available.
-            0: [1, 2, 3]
-            1: [4, 5, 6]
-            2: [7, 8, 9]
+            Display initial marks:
+                [1, 2, 3]
+                [4, 5, 6]
+                [7, 8, 9]
+            Where there are:
+                9 board positions indexed 0 through 8
+                8 stripes of 3 positions each:
+                    row stripes - [1,2,3], [4,5,6], [7,8,9]
+                    column stripes - [1,4,7], [2,5,8], [3,6,9]
+                    diagonal stripes - [1,5,9], [3,5,7]
+            A player must mark all of the positions in a single stripe
+            to win a game.
         """
-        self.player_marks = player_marks
-        self.positions = [
-            [self.BOARD_WIDTH * row_idx + col_idx + 1\
-                for col_idx in range(self.BOARD_WIDTH)]\
-                    for row_idx in range(self.BOARD_WIDTH)]
+        self.positions = []
+        self.stripes = []
 
-    def calculate_next_move(self, player):
-        """
-        Calculate the computer's move.
-        """
-        available_positions = self.get_available_positions()
-        available_positions_count = len(available_positions)
-        if available_positions_count > 0:
-            # Randomly select an available position.
-            random_move = randrange(available_positions_count)
-            row, col = available_positions[random_move]
-            self.mark_position(row, col, player)
+        # Create the game board's positions and row stripes objects.
+        stripe_idx = 0
+        for i in range(self.BOARD_WIDTH):
+            # Initial the row stripes.
+            stripe = Stripe(self.BOARD_WIDTH)
+            self.stripes.append(stripe_idx)
+            self.stripes[stripe_idx] = stripe
+            for j in range(self.BOARD_WIDTH):
+                # Calculate the position index.
+                position_idx = i * self.BOARD_WIDTH + j
+                # Create the position.
+                self.positions.append(position_idx)
+                self.positions[position_idx] = Position(
+                    position_idx,
+                    self.BOARD_WIDTH
+                    )
+                # Save positions to row stripes.
+                stripe.add_position(self.positions[position_idx])
+            stripe_idx += 1
+
+        # Create the game board's column stripes.
+        for i in range(self.BOARD_WIDTH):
+            stripe = Stripe(self.BOARD_WIDTH)
+            self.stripes.append(stripe_idx)
+            self.stripes[stripe_idx] = stripe
+            for j in range(self.BOARD_WIDTH):
+                # Calculate the position index.
+                position_idx = i + self.BOARD_WIDTH * j
+                # Save positions to column stripes.
+                stripe.add_position(self.positions[position_idx])
+            stripe_idx += 1
+
+        # Create the game board's diagonal stripes.
+        #
+        #  - Backward diagonal:
+        #       position indicies: [2,4,6]; calc using 2+i*2
+        backward_stripe = Stripe(self.BOARD_WIDTH)
+        self.stripes.append(backward_stripe)
+        self.stripes[stripe_idx] = backward_stripe
+        stripe_idx += 1
+        #
+        #  - Forward diagonal:
+        #       position indicies: [0,4,8]; calc using i*4
+        forward_stripe = Stripe(self.BOARD_WIDTH)
+        self.stripes.append(stripe_idx)
+        self.stripes[stripe_idx] = forward_stripe
+
+        pos_offset = self.BOARD_WIDTH - 1
+        for i in range(self.BOARD_WIDTH):
+            # Save positions to the forward diagonal stripe.
+            position = self.positions[i * pos_offset * 2]
+            forward_stripe.add_position(position)
+            # Save positions to the backward diagonal stripe.
+            position = self.positions[pos_offset + i * pos_offset]
+            backward_stripe.add_position(position)
+
+        # Optimize the stripes for the smart move calculater by listing
+        # the diagonal stripes first. Generally, moves on the stripes
+        # are the stronger moves at the beginning of the game.
+        self.stripes.reverse()
+        self.forward_diagonal_stripe_index = 0
+        self.backward_diagonal_stripe_index = 1
 
     def display_positions(self):
         """
         Display the current board.
         """
         for row_idx in range(self.BOARD_WIDTH):
+            position_idx = row_idx * self.BOARD_WIDTH
             print(self.BOARD_LINER)
             print(self.BOARD_SPACE)
-            print(self.BOARD_MOVES.format(
-                self.positions[row_idx][0],
-                self.positions[row_idx][1],
-                self.positions[row_idx][2]))
+            print(self.BOARD_MARKS.format(
+                self.positions[position_idx].position_display,
+                self.positions[position_idx + 1].position_display,
+                self.positions[position_idx + 2].position_display
+                ))
             print(self.BOARD_SPACE)
         print(self.BOARD_LINER)
 
-    def is_game_over(self, player):
+    def get_available_corner_positions(self):
         """
-        If a three-in-a-row win is detected return True.
+        Return a list of the corner positions.
         """
-        diagonal_1 = True
-        diagonal_2 = True
-        for idx in range(3):
-            # Check each row for a win.
-            if self.positions[idx][0] == player.mark and\
-                    self.positions[idx][1] == player.mark and\
-                    self.positions[idx][2] == player.mark:
-                return True
-            # Check each column for a win.
-            if self.positions[0][idx] == player.mark and\
-                    self.positions[1][idx] == player.mark and\
-                    self.positions[2][idx] == player.mark:
-                return True
-            # Check "\" diagonal to see if all 3 marked.
-            if diagonal_1:
-                if self.positions[idx][idx] != player.mark:
-                    diagonal_1 = False
-            # Check "/" diagonal to see if all 3 marked.
-            if diagonal_2:
-                if self.positions[2 - idx][2 - idx] != player.mark:
-                    diagonal_2 = False
-        return diagonal_1 or diagonal_1
+        corners_found = []
+        for position in self.positions:
+            if position.is_available_corner():
+                corners_found.append(position)
+        return corners_found
 
     def get_available_positions(self):
         """
-        Get a list of the remaining available positions.
+        Return True if there are available positions.
         """
         available_positions = []
-        for row_idx in range(self.BOARD_WIDTH):
-            for col_idx in range(self.BOARD_WIDTH):
-                if self.positions[row_idx][col_idx] not in self.player_marks:
-                    available_positions.append((row_idx, col_idx))
+        for position in self.positions:
+            if position.is_available():
+                available_positions.append(position)
         return available_positions
 
-    def mark_position(self, row_idx, col_idx, player):
+    def get_center_position(self):
         """
-        Place the player's mark in the selected position.
+        Get the middle position.  It is the best position to select for
+        the turn.
         """
-        self.positions[row_idx][col_idx] = player.mark
+        center_position_idx = int((len(self.positions) - 1) / 2)
+        return self.positions[center_position_idx]
 
-    def request_next_move(self, player):
+    def get_stripes_with_available_positions(self):
+        """
+        Get a list of stripes with available positions.
+        """
+        stripes_found = []
+        for stripe in self.stripes:
+            if stripe.has_available_position():
+                stripes_found.append(stripe)
+        return stripes_found
+
+    def get_stripes_with_n_player_marks(self, player, n_marks, turn_count):
+        """
+        Get a list of stripes with the required number of player marks.
+        Skip stripes that have any marks by the other player since they
+        are not winnable.
+        """
+        stripes_found = []
+        corners_only = True if n_marks == 1 and turn_count <= 6 else False
+        for stripe in self.stripes:
+            if corners_only and not stripe.has_corner_positions():
+                # Ignore stripes without corner positions.
+                continue
+            if stripe.has_n_player_marks(player, n_marks):
+                stripes_found.append(stripe)
+        return stripes_found
+
+    def has_available_positions(self):
+        """
+        Return True if there are available positions.
+        """
+        for position in self.positions:
+            if position.is_available():
+                # The game continues.
+                return True
+        return False
+
+    def is_game_over(self, player):
+        """
+        If a player has marked all positions in a stripe, the game is
+        over; return True.
+        """
+        for stripe in self.stripes:
+            if stripe.has_n_player_marks(player, n_marks=3):
+                return True
+        return False
+
+    def request_next_move(self):
         """
         Request the human player's move.
         """
@@ -117,16 +207,14 @@ class GameBoard:
         while not valid_move:
             player_move = input("Enter your move: ")
             if not self.valid_players_move(player_move):
-                print("Bad move, try again")
+                print("Not recognized, try again")
                 continue
-            player_move = int(player_move) - 1
-            selected_row = player_move // 3
-            selected_col = player_move % 3
-            if not str(self.positions[selected_row][selected_col]).isdigit():
-                print("Already taken, try again")
+            selected_position_idx = int(player_move) - 1
+            if not self.positions[selected_position_idx].is_available():
+                print("Already marked, try again")
                 continue
             valid_move = True
-        self.mark_position(selected_row, selected_col, player)
+        return self.positions[selected_position_idx]
 
     @staticmethod
     def valid_players_move(player_move):
