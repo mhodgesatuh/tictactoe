@@ -56,7 +56,7 @@ class GamePlay:
 
     def get_next_player(self):
         """
-        Determine the index of the player taking the next turn.
+        Get the next player by turn count.
         """
         return self.players[self.turn_count % self.players_cnt]
 

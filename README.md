@@ -16,20 +16,22 @@ The interacting objects are:
 - Game Play (rules and turns)
 - Player (opponents)
 
+Bonus 3 objects are:
+
+- Game Board Position (9 positions total)
+- Game Board Stripe (rows, columns, diagonals)
+- Smart Move Calculator (calculate best next move)
+
 ## Bonus Exercises
 For extra credit:
 
 Bonus must be done in this order for credit.  No skipping around.
 
 - Bonus 1: Implement linting
-- Bonus 2: Implemment unit testing and get code coverage as close to 100% as possible.
-- Bonus 3: Implement a smart computer player
-- Bonus 4: Implement a GUI interface (not included in this example)
+- Bonus 2: Implemment unit testing and get code coverage above 95%.
+- Bonus 3: Implement a smart computer player what can win games.
+- Bonus 4: Randomize the selected best next move.
+- Bonus 5: Implement a GUI interface (not included in this example)
 
 ### Unit testing
     pytest --cov-report xml --cov-report term-missing --cov=tictactoe
-
-### New Objects for Bonus 3
-- Game Board Position
-- Game Board Stripe (rows, columns, diagonals)
-- Smart Move Calculator

@@ -49,7 +49,7 @@ class SmartMoveCalculator:
             pos_idx = randrange(0, 3, 2)
             return self.board.stripes[stripe_idx].positions[pos_idx]
 
-        # Check for stripes with 2 same_player marks in order to win or
+        # Check for stripes with 2 same-player marks in order to win or
         # block a win.  Then check for stripes with 1 mark.
         for n_marks in range(2, 0, -1):
 

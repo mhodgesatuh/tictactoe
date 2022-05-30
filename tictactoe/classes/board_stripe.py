@@ -31,6 +31,25 @@ class BoardStripe:
         if position.is_corner():
             self.corner_positions = True
 
+    def get_available_corner_positions(self):
+        """
+        Return a list of available corner positions.
+        """
+        return self.get_available_positions(True)
+
+    def get_available_positions(self, corners_only=False):
+        """
+        Return a list of available positions.
+        """
+        positions_found = []
+        for idx in range(self.board_width):
+            if corners_only and not self.positions[idx].is_corner():
+                continue
+            if self.positions[idx].is_available():
+                positions_found.append(self.positions[idx])
+        return positions_found
+
+
     def has_available_position(self):
         """
         Stripe has at least one available position.
@@ -60,26 +79,3 @@ class BoardStripe:
                 # The other player has marked in this stripe.
                 return False
         return marks_found_cnt == n_marks
-
-    def get_available_corner_positions(self):
-        """
-        Return a list of available corner positions.
-        """
-        return self.get_available_positions(True)
-
-    def get_available_positions(self, corners_only=False):
-        """
-        Return a list of available positions.
-        """
-        positions_found = []
-        for idx in range(self.board_width):
-            if corners_only and not self.positions[idx].is_corner():
-                continue
-            if self.positions[idx].is_available():
-                positions_found.append(self.positions[idx])
-        return positions_found
-
-    def is_position_in_stripe(self, position):
-        """
-        Return True if the position is found in the strip.
-        """
