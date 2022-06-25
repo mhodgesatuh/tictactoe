@@ -30,9 +30,10 @@ class GamePlay:
         """
         self.board = GameBoard()
         self.move_calculator = MoveCalculator(self.board)
-        self.players = []
-        self.players.append(Player(self.PLAYER_MARKS[0], computer_player=True))
-        self.players.append(Player(self.PLAYER_MARKS[1]))
+        self.players = [
+            Player(self.PLAYER_MARKS[0], computer_player=True),
+            Player(self.PLAYER_MARKS[1])
+        ]
         self.players_cnt = len(self.players)
         self.turn_count = 1
 
@@ -78,11 +79,13 @@ class GamePlay:
         Human and computer take turns.  Computer takes the first move.
         The current player is determined using modulo on the turn count.
         """
-        # Take turns until there is a winner or no open positions
-        # remain.
         winning_player = None
         while self.board.has_available_positions():
+            # Take turns until there is a winner or no open
+            # positions remain.
+
             self.board.display_positions()
+
             # Get next move.
             if self.is_current_player_computer():
                 print('Computer\'s move:')
@@ -93,15 +96,19 @@ class GamePlay:
             else:
                 # Human to input the next move.
                 selected_position = self.board.request_next_move()
+
             # Update the game board.
             selected_position.set_marked_by(self.get_current_player())
+
             # Assess the move.
             if self.board.is_game_over(self.get_current_player()):
                 # We have a winner.
                 winning_player = self.get_current_player()
                 break
+
             # The game continues.
             self.turn_count += 1
 
+        # Display board one last time and return the winner.
         self.board.display_positions()
         return winning_player

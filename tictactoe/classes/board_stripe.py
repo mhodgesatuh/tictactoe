@@ -21,7 +21,7 @@ class BoardStripe:
         """
         self.positions = []
         self.corner_positions = False
-        self.board_width = board_width
+        self.stripe_len = board_width
 
     def add_position(self, position):
         """
@@ -42,19 +42,18 @@ class BoardStripe:
         Return a list of available positions.
         """
         positions_found = []
-        for idx in range(self.board_width):
+        for idx in range(self.stripe_len):
             if corners_only and not self.positions[idx].is_corner():
                 continue
             if self.positions[idx].is_available():
                 positions_found.append(self.positions[idx])
         return positions_found
 
-
     def has_available_position(self):
         """
         Stripe has at least one available position.
         """
-        for idx in range(self.board_width):
+        for idx in range(self.stripe_len):
             if self.positions[idx].is_available():
                 return True
         return False
@@ -69,13 +68,13 @@ class BoardStripe:
         """
         A single player has 'n' marks in a stripe.  Used for identifying
         the number of marks a player has thus far.  If a stripe has the
-        other players mark in it, it's no longer useful.
+        other player's mark in it, it's no longer useful.
         """
         marks_found_cnt = 0
-        for idx in range(self.board_width):
+        for idx in range(self.stripe_len):
             if self.positions[idx].is_marked_by(player):
                 marks_found_cnt += 1
             elif not self.positions[idx].is_available():
-                # The other player has marked in this stripe.
+                # The other player has a mark in this stripe.
                 return False
         return marks_found_cnt == n_marks

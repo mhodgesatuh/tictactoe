@@ -21,7 +21,6 @@ class BoardPosition:
         self.position_idx = position_idx
         self.marked_by = ""
         self.corner_position = False
-
         position_no = position_idx + 1
 
         # Initially display the digits 1 through 9.

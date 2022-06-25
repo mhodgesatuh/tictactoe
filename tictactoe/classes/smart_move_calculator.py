@@ -33,7 +33,8 @@ class SmartMoveCalculator:
 
     def calculate_move_for(self, player, other_player, turn_count):
         """
-        Calculate and perform the next move.
+        Calculate the next move.  In the case of multiple equivalent
+        next moves, randomly select the one to return.
         """
         # First and second turns.
         if turn_count <= 2:
@@ -45,6 +46,7 @@ class SmartMoveCalculator:
 
             # Randomly choose one of the two diagonals.
             stripe_idx = self.board.forward_diagonal_stripe_index + randrange(2)
+
             # Randomly choose one of the two ends, 0 or 2, of the diagonal.
             pos_idx = randrange(0, 3, 2)
             return self.board.stripes[stripe_idx].positions[pos_idx]
@@ -94,7 +96,8 @@ class SmartMoveCalculator:
             pos_idx = randrange(len(available_corner_positions))
             return available_corner_positions[pos_idx]
 
-        # Randomly choose a any position, if available.
+        # Randomly choose any remaining position since it doesn't
+        # matter which at this poinnt.
         available_positions = stripe.get_available_positions()
         pos_idx = randrange(len(available_positions))
         return available_positions[pos_idx]

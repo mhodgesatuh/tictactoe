@@ -49,10 +49,12 @@ class GameBoard:
         # Create the game board's positions and row stripes objects.
         stripe_idx = 0
         for i in range(self.BOARD_WIDTH):
+
             # Initial the row stripes.
             stripe = Stripe(self.BOARD_WIDTH)
             self.stripes.append(stripe_idx)
             self.stripes[stripe_idx] = stripe
+
             for j in range(self.BOARD_WIDTH):
                 # Calculate the position index.
                 position_idx = i * self.BOARD_WIDTH + j
@@ -64,6 +66,7 @@ class GameBoard:
                     )
                 # Save positions to row stripes.
                 stripe.add_position(self.positions[position_idx])
+
             stripe_idx += 1
 
         # Create the game board's column stripes.
@@ -71,11 +74,13 @@ class GameBoard:
             stripe = Stripe(self.BOARD_WIDTH)
             self.stripes.append(stripe_idx)
             self.stripes[stripe_idx] = stripe
+
             for j in range(self.BOARD_WIDTH):
                 # Calculate the position index.
                 position_idx = i + self.BOARD_WIDTH * j
                 # Save positions to column stripes.
                 stripe.add_position(self.positions[position_idx])
+
             stripe_idx += 1
 
         # Create the game board's diagonal stripes.
@@ -196,6 +201,7 @@ class GameBoard:
         """
         for stripe in self.stripes:
             if stripe.has_n_player_marks(player, n_marks=3):
+                # The game is finished.
                 return True
         return False
 
@@ -206,14 +212,21 @@ class GameBoard:
         valid_move = False
         while not valid_move:
             player_move = input("Enter your move: ")
+
             if not self.valid_players_move(player_move):
+                # Validate player's input.
                 print("Not recognized, try again")
                 continue
+
             selected_position_idx = int(player_move) - 1
             if not self.positions[selected_position_idx].is_available():
+                # Validate selection of an available position.
                 print("Already marked, try again")
                 continue
+
+            # Position selection validated.
             valid_move = True
+
         return self.positions[selected_position_idx]
 
     @staticmethod
