@@ -25,10 +25,10 @@ Bonus 3 objects are:
 ## Bonus Exercises
 For extra credit:
 
-Bonus must be done in this order for credit.  No skipping around.
+Bonuses must be done in this order for credit.  No skipping around.
 
 - Bonus 1: Implement linting
-- Bonus 2: Implemment unit testing and get code coverage above 95%.
+- Bonus 2: Implement unit testing and get code coverage above 95%.
 - Bonus 3: Implement a smart computer player what can win games.
 - Bonus 4: Randomize the selected best next move.
 - Bonus 5: Implement a GUI interface (not included in this example)
