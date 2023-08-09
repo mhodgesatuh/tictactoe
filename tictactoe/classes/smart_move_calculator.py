@@ -14,8 +14,8 @@ class SmartMoveCalculator:
         turn 2	                      corner position
         turn 3+
         - row/dia with 2 self only    remaining position in stripe, win
-        - row/dia with 2 other only	  remaining position in stripe, block win
-        - row/dia with 1 self only	  opposite end of stripe
+        - row/dia with 2 other only   remaining position in stripe, block win
+        - row/dia with 1 self only    opposite end of stripe
         - any unmarked position
     """
 
